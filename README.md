@@ -9,7 +9,7 @@
 
 ##Подготовка к работе
 ###GIT
-Как пользоваться гитхабом, можно посмотреть [тут](https://help.github.com/articles/set-up-git).
+Как пользоваться гитхабом, можно посмотреть [тут](https://help.github.com/articles/set-up-git).  
 Для начала нам понадобится стянуть исходный код для занятий, выполнив комманду:
 
 ```bash
@@ -65,7 +65,7 @@ git checkout -f step-0
 	    thunkify = require('thunkify'),
 	    mysql = require('./library/mysql/index'),
 	    thunkifiedMysql = thnkify(mysql);
-
+	    
     co(function * testing() {
         console.log('thunkifiedMysql --> ', yield thunkifiedMysql('SHOW DATABASES'));
     })();
@@ -78,7 +78,7 @@ git checkout -f step-0
 (function () {
 	var mysql = require('./library/mysql/index');
 
-	mysql('SHOW DATABASES', function(err, rows, fields){
+	mysql('SHOW DATABASES', function(err, rows, fields){ 
 		console.log('err --> ', err);
 		console.log('rows --> ', rows);
 	});
@@ -93,7 +93,7 @@ git checkout -f step-0
 	    thunkify = require('thunkify'),
 	    mysql = require('./library/mysql/index'),
 	    thunkifiedMysql = thnkify(mysql);
-
+	    
     co(function * testing() {
 	    var result = yield thunkifiedMysql('SHOW DATABASES');
         console.log('rows --> ', result[0]);
@@ -155,7 +155,7 @@ git checkout -f step-0
 (function () {
     var co = require('co'),
         promisedMysql = require('./library/mysql/promised');
-
+        
     co(function * testing() {
         console.log('promisedMysql --> ', yield promisedMysql('SHOW DATABASES'));
     })();
@@ -199,7 +199,7 @@ git checkout -f step-0
 (function () {
     var co = require('co'),
         thunkifiedMysql = require('./library/mysql/thunkified');
-
+        
     co(function * testing() {
         console.log('thunkifiedMysql --> ', yield thunkifiedMysql('SHOW DATABASES'));
     })();
