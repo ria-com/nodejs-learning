@@ -220,3 +220,93 @@ git checkout -f step-0
 ```bash
 git checkout -f step-1
 ```
+
+Одной из реализуемых, но при этом не очень понятной, является задача последовательного тестирования асинхронных функций. При помощи генераторов и библиотеки *co* это превращается в простой и понятный код.
+
+Для написания тестов был специально написан менеджер, который наглядно продемонстрирует работу spec-файла. Менеджер находится в папке проекта *./library/managers/userManager.js*:
+
+```javascript
+"use strict";
+
+(function () {
+    var users = [],
+        _ = require('underscore');
+    module.exports = {
+        addUser: function (params) {
+            users.push(params);
+            return function (next) {
+                setTimeout(function () {
+                    return next(null, users.indexOf(params));
+                }, 1500);
+            }
+        },
+        getUser: function (id) {
+            return function (next) {
+                setTimeout(function () {
+                    return next(null, users[id]);
+                }, 500);
+            }
+        },
+        changeUser: function (id, params) {
+            users[id] = _.extend(users[id], params);
+            return function (next) {
+                setTimeout(function(){
+                    return next(null, users[id]);
+                }, 1000);
+            }
+        }
+    }
+}());
+```
+
+Как видим, ничего сложного в нем нет. Единственная особенность - разные таймауты в функциях добавления/изменения/вытяжки данных. Рассмотрим тест, написанный на методы данного менеджера, он находится в папке проекта *./spec/userManagerSpec.js*:
+
+```javascript
+"use strict";
+
+(function(){
+    var co = require('co'),
+        userManager = require('./../library/managers/userManager'),
+        userMock = {
+            "name": "James",
+            "surname": "Bond"
+        };
+
+    describe('Проверяем добавление и изменение данных пользователя', function(){
+        var userId, userData;
+        it('Добавление нового пользователя', co(function * addUserTest(){
+            userId = yield userManager.addUser(userMock);
+            expect(userId).toEqual(jasmine.any(Number));
+        }));
+        it('Изменение данных пользователя', co(function * updateUserTest(){
+            userMock.surname = 'Pont';
+            var newUserData = yield userManager.changeUser(userId, userMock);
+            expect(newUserData.surname).toBe(userMock.surname);
+        }));
+        it('Вытяжка данных о пользователе', co(function * getUserTest(){
+            userData = yield userManager.getUser(userId);
+            expect(userData.name).toBe(userMock.name);
+            expect(userData.surname).toBe(userMock.surname);
+        }));
+    });
+}());
+```
+
+В общем, это один из вариантов реализации тестирования при помощи *jasmine-node* и *co*.
+Запустить тесты можно коммандой:
+
+```bash
+npm test
+``` 
+
+Из папки с проектом. Результат будет приблизительно следующим:
+
+```bash
+> nodejs-learning@1.0.0 test /var/www/nodejs-learning
+> /usr/bin/node --harmony ./node_modules/jasmine-node/bin/jasmine-node spec
+
+...
+
+Finished in 3.041 seconds
+3 tests, 4 assertions, 0 failures, 0 skipped
+```
