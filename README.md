@@ -14,6 +14,7 @@
 		- [Преобразование при помощи promise библиотеки Q](#user-content-%D0%9F%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D0%B8-promise-%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA%D0%B8-q)
 		- [Преобразование вручную без сторонних инструментов](#user-content-%D0%9F%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B2%D1%80%D1%83%D1%87%D0%BD%D1%83%D1%8E-%D0%B1%D0%B5%D0%B7-%D1%81%D1%82%D0%BE%D1%80%D0%BE%D0%BD%D0%BD%D0%B8%D1%85-%D0%B8%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D0%B2)
 	- [Написание тестов при помощи co и jasmine-node](#user-content-%D0%9D%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D0%BD%D0%B8%D0%B5-%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2-%D0%BF%D1%80%D0%B8-%D0%BF%D0%BE%D0%BC%D0%BE%D1%89%D0%B8-co-%D0%B8-jasmine-node)
+	- [Полезные функции библиотеки underscore.js](#user-content-%D0%9F%D0%BE%D0%BB%D0%B5%D0%B7%D0%BD%D1%8B%D0%B5%20%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8%20%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA%D0%B8%20underscore.js)
 
 
 ##Подготовка к работе
@@ -309,4 +310,129 @@ npm test
 
 Finished in 3.041 seconds
 3 tests, 4 assertions, 0 failures, 0 skipped
+```
+
+##Полезные функции библиотеки [underscore.js](http://underscorejs.org/)
+
+###pluck и object
+
+Бывали ли случаи когда, достав из базы, массив Вам хотелось его преобразовать во что-то иное?
+
+```javascript
+[
+	{id: 1, name: "foo"},
+	{id: 2, name: "bar"},
+	...
+	{id: 100, name: "baz"}
+]
+```
+
+Например из этого можно получить вот такое:
+
+```javascript
+["foo","bar",..,"baz"]
+```
+
+Или такое:
+
+```javascript
+[1,2,...,100]
+```
+
+Или вот такое:
+
+```javascript
+{
+	1: "foo",
+	2: "bar",
+	...
+	3: "baz"
+}
+```
+
+Первый и второй случай:
+
+```javascript
+var users = [{id:1,name:"foo"},{id:2,name:"bar"},{id:100,name:"baz"}];
+_.pluck(users, "id"); // --> [1,2,100]
+_.pluck(users, "name"); // --> ["foo","bar","baz"]
+```
+
+Третий случай:
+
+```javascript
+var users = [{id:1,name:"foo"},{id:2,name:"bar"},{id:100,name:"baz"}];
+_.object(_.pluck(users, "id"), _.pluck(users, "name")); 
+// --> {1:"foo",2:"bar",100:"baz"}
+```
+
+###map и reduce
+
+Например, необходимо посчитать сумму чисел в массиве:
+
+```javascript
+_.reduce([1,2,3,4], function(memo, num){return memo+num;}); // --> 10
+```
+
+Или получить все комбинации слов:
+```javascript
+_.reduce([['foo','bar','baz'],['zoo'],['zor', 'paf']], function(memo, arr){
+    var res = [];
+    memo.forEach(function(itm){
+        arr.forEach(function(item){
+            res.push([itm, item].join(' '));
+        });
+    });
+    return res;
+});
+
+// --> 
+//[
+//  'foo zoo zor', 'foo zoo paf', 'bar zoo zor',
+//  'bar zoo paf', 'baz zoo zor', 'baz zoo paf'
+//]
+```
+
+Можно добавить в каждый элемент массива какое-то поле:
+```javascript
+_.map([{id: 1, name: "foo"},{id: 2, name: "bar"}], function (itm) {
+    itm.date = new Date;
+    return itm;
+});
+
+// --> 
+//[ 
+//  {
+//    id: 1,
+//    name: 'foo',
+//    date: Mon Sep 29 2014 20:51:02 GMT+0300 (EEST) 
+//  },
+//  {
+//    id: 2,
+//    name: 'bar',
+//    date: Mon Sep 29 2014 20:51:02 GMT+0300 (EEST) 
+//  } 
+///]
+```
+
+###flatten, uniq и compose
+
+Например:
+
+```javascript
+var myFunc = _.compose(_.uniq, _.flatten);
+myFunc([['foo'], 'foo', 'bat', [['bar'], ['baz'], ['bat']]]); 
+// --> [ 'foo', 'bat', 'bar', 'baz' ]
+```
+
+###once
+
+```javascript
+var onceFunc = _.once(function(){
+    console.log('Hello world!!');
+});
+onceFunc();
+onceFunc();
+onceFunc();
+// --> Hello world!!
 ```
