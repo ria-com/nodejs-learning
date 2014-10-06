@@ -28,7 +28,7 @@
 Для начала нам понадобится стянуть исходный код для занятий, выполнив комманду:
 
 ```bash
-git clone https://github.com/ria-com/node-koajs-skeleton.git
+git clone https://github.com/ria-com/nodejs-learning.git
 ```
 ###node.js
 Для корректной работы всех примеров понадобится версия не ниже 0.11.x. После этого необходимо в папке с проектом выполнить следующую комманду:
