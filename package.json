@@ -9,7 +9,9 @@
     "q": "^1.0.1",
     "thunkify": "^2.1.2",
     "underscore": "~1.7.0",
-    "jasmine-node": "~1.14.5"
+    "jasmine-node": "~1.14.5",
+    "amqplib": "~0.2.1",
+    "when": "~3.5.0"
   },
   "devDependencies": {},
   "scripts": {
